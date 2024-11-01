@@ -7,7 +7,7 @@ def test_model():
     with open('templates.pkl', 'rb') as f:
         templates = pickle.load(f)
 
-    base_path = './data/test/'
+    base_path = '../data/test/'
     results = {}
 
     for person in os.listdir(base_path):

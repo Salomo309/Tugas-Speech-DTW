@@ -5,7 +5,7 @@ def calculate_accuracy(results):
     total = 0
     for person, vowels in results.items():
         for vowel, predicted_vowel in vowels.items():
-            if vowel == predicted_vowel:
+            if vowel[0] == predicted_vowel[0]:
                 correct += 1
             total += 1
     return correct / total * 100

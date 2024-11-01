@@ -4,7 +4,7 @@ from extract_features import extract_mfcc
 
 def train_templates():
     templates = {}
-    base_path = './data/templates/'
+    base_path = '../data/templates'
 
     for vowel_file in os.listdir(base_path):
         if vowel_file.endswith('.aac'):
