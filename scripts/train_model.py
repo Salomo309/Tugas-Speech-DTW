@@ -6,14 +6,12 @@ def train_templates():
     templates = {}
     base_path = './data/templates/'
 
-    for person in os.listdir(base_path):
-        person_path = os.path.join(base_path, person)
-        templates[person] = {}
-
-        for vowel in os.listdir(person_path):
-            file_path = os.path.join(person_path, vowel)
+    for vowel_file in os.listdir(base_path):
+        if vowel_file.endswith('.aac'):
+            vowel_label = vowel_file.split('.')[0]
+            file_path = os.path.join(base_path, vowel_file)
             mfcc_features = extract_mfcc(file_path)
-            templates[person][vowel.split('.')[0]] = mfcc_features
+            templates[vowel_label] = mfcc_features
 
     with open('templates.pkl', 'wb') as f:
         pickle.dump(templates, f)
