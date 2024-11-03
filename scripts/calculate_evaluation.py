@@ -12,5 +12,6 @@ def calculate_accuracy(results):
 
 if __name__ == "__main__":
     results = test_model()
+    print(results)
     accuracy = calculate_accuracy(results)
     print(f"Accuracy: {accuracy:.2f}%")
