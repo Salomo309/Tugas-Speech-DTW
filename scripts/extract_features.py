@@ -11,14 +11,14 @@ def apply_filter(samples, filter_type, cutoff, samplerate=16000, order=5):
     filtered_samples = filtfilt(b, a, samples)
     return filtered_samples
 
-def extract_mfcc(file_path, num_mfcc=39, apply_filter=None, filter_type=None, cutoff=None):
+def extract_mfcc(file_path, num_mfcc=39, use_filter=False, filter_type=None, cutoff=None):
     audio = AudioSegment.from_file(file_path)
     audio = audio.set_frame_rate(16000)
     audio = audio.set_channels(1)
     samples = np.array(audio.get_array_of_samples())
-
-    if apply_filter and filter_type and cutoff:
+    
+    if use_filter and filter_type and cutoff:
         samples = apply_filter(samples, filter_type, cutoff, samplerate=16000)
-
+    
     mfcc_features = psf.mfcc(samples, samplerate=16000, numcep=num_mfcc)
     return mfcc_features
