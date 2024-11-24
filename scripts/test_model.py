@@ -72,7 +72,7 @@ def calculate_accuracy(results):
         for person, person_results in filter_results.items():
             for vowel_label, predicted in person_results.items():
                 total += 1
-                if vowel_label == predicted:
+                if vowel_label[0] == predicted[0]:
                     correct += 1
         
         accuracy = (correct / total) * 100 if total > 0 else 0
@@ -94,7 +94,7 @@ if __name__ == "__main__":
             for person, person_results in filter_results.items():
                 print(f"\nPerson: {person}")
                 for vowel_label, predicted in person_results.items():
-                    print(f"True: {vowel_label}, Predicted: {predicted}")
+                    print(f"True: {vowel_label}, Predicted: {predicted[0]}")
         
         print("\nAccuracies:")
         for filter_type, accuracy in accuracies.items():
