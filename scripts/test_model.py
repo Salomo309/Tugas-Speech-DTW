@@ -3,7 +3,7 @@ import pickle
 from extract_features import extract_mfcc
 from dtw_algorithm import dtw_distance
 
-def test_model(apply_filter=None, filter_type=None, cutoff=None):
+def test_model(use_filter=None, filter_type=None, cutoff=None):
     with open('templates.pkl', 'rb') as f:
         templates = pickle.load(f)
 
@@ -21,7 +21,7 @@ def test_model(apply_filter=None, filter_type=None, cutoff=None):
                 # Extract MFCC with optional filtering
                 test_mfcc = extract_mfcc(
                     os.path.join(person_path, vowel_file),
-                    apply_filter=apply_filter,
+                    apply_filter=use_filter,
                     filter_type=filter_type,
                     cutoff=cutoff
                 )
@@ -40,7 +40,7 @@ def test_model(apply_filter=None, filter_type=None, cutoff=None):
     return results
 
 if __name__ == "__main__":
-    
+
     # Experiment 1: No filter
     print("Testing without filter...")
     results_no_filter = test_model(apply_filter=False)
@@ -48,10 +48,10 @@ if __name__ == "__main__":
 
     # Experiment 2: High-pass filter
     print("\nTesting with high-pass filter (cutoff=500 Hz)...")
-    results_highpass = test_model(apply_filter=True, filter_type='high', cutoff=500)
+    results_highpass = test_model(use_filter=True, filter_type='high', cutoff=500)
     print("Results (High-pass Filter):", results_highpass)
 
     # Experiment 3: Low-pass filter
     print("\nTesting with low-pass filter (cutoff=4000 Hz)...")
-    results_lowpass = test_model(apply_filter=True, filter_type='low', cutoff=4000)
+    results_lowpass = test_model(use_filter=True, filter_type='low', cutoff=4000)
     print("Results (Low-pass Filter):", results_lowpass)
