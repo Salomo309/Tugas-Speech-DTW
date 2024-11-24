@@ -15,7 +15,7 @@ def test_model():
         results[person] = {}
 
         for vowel_file in os.listdir(person_path):
-            if vowel_file.endswith('.aac'):
+            if vowel_file.endswith(('.aac', '.wav')):
                 vowel_label = vowel_file.split('.')[0]
                 test_mfcc = extract_mfcc(os.path.join(person_path, vowel_file))
 
