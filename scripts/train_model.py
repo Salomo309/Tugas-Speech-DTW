@@ -40,7 +40,7 @@ def calculate_average_mfcc(mfcc_list):
 
 def train_templates():
     templates = {}
-    base_path = './data/templates/'
+    base_path = '../data/templates/'
 
     for vowel in os.listdir(base_path):
         vowel_path = os.path.join(base_path, vowel)
@@ -48,9 +48,9 @@ def train_templates():
             mfcc_list = []
 
             for template_file in os.listdir(vowel_path):
-                if template_file.endswith('.aac'):
+                if template_file.endswith('.aac') or template_file.endswith('.wav'):
                     file_path = os.path.join(vowel_path, template_file)
-                    mfcc_features = extract_mfcc(file_path)
+                    mfcc_features = extract_mfcc(file_path, 39)
                     mfcc_list.append(mfcc_features)
 
             if mfcc_list:
@@ -58,7 +58,7 @@ def train_templates():
                 templates[vowel] = averaged_mfcc
 
     # Simpan hasil template rata-rata
-    with open('templates.pkl', 'wb') as f:
+    with open('templates_39_nofilter.pkl', 'wb') as f:
         pickle.dump(templates, f)
 
 if __name__ == "__main__":

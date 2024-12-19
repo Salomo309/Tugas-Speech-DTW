@@ -29,9 +29,36 @@
 import librosa
 import numpy as np
 
-def extract_mfcc(file_path, n_mfcc=39):
+# def extract_mfcc(file_path, n_mfcc=39):
+#     # Load audio file
+#     audio, sr = librosa.load(file_path, sr=None)
+
+#     # Ekstraksi MFCC
+#     mfcc_features = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=n_mfcc)
+
+#     # Transpose untuk mendapatkan dimensi (frame x n_mfcc)
+#     return mfcc_features.T
+
+def extract_mfcc(file_path, n_mfcc=39, filter_type=None, cutoff=3000):
+    from scipy.signal import butter, lfilter
+
+    def apply_filter(audio, sr, filter_type, cutoff):
+        nyquist = 0.5 * sr
+        normal_cutoff = cutoff / nyquist
+        if filter_type == 'low':
+            b, a = butter(1, normal_cutoff, btype='low', analog=False)
+        elif filter_type == 'high':
+            b, a = butter(1, normal_cutoff, btype='high', analog=False)
+        else:
+            return audio  # Tidak ada filter
+        return lfilter(b, a, audio)
+
     # Load audio file
     audio, sr = librosa.load(file_path, sr=None)
+
+    # Terapkan filter jika diperlukan
+    if filter_type:
+        audio = apply_filter(audio, sr, filter_type, cutoff)
 
     # Ekstraksi MFCC
     mfcc_features = librosa.feature.mfcc(y=audio, sr=sr, n_mfcc=n_mfcc)

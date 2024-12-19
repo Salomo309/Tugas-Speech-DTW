@@ -5,23 +5,21 @@ from dtw_algorithm import dtw_distance
 
 def test_model():
     templates = {}
-    for filter_type in ['original', 'lowpass', 'highpass']:
-        template_file = f'templates_{filter_type}.pkl'
-        with open(template_file, 'rb') as f:
-            templates[filter_type] = pickle.load(f)
-    
     base_path = '../data/test/'
-    results = {
-        'original': {},
-        'lowpass': {},
-        'highpass': {}
-    }
+
+    # Load templates sesuai format nama file
+    for n_mfcc in [13, 20, 39]:
+        for filter_type in ['nofilter', 'low', 'high']:
+            template_file = f'templates_{n_mfcc}_{filter_type}.pkl'
+            with open(template_file, 'rb') as f:
+                templates[f'n_mfcc_{n_mfcc}_filter_{filter_type}'] = pickle.load(f)
+
+    results = {key: {} for key in templates.keys()}
     
     for person in os.listdir(base_path):
         person_path = os.path.join(base_path, person)
-        
-        for filter_type in results:
-            results[filter_type][person] = {}
+        for key in results:
+            results[key][person] = {}
         
         for vowel_file in os.listdir(person_path):
             if vowel_file.endswith(('.aac', '.wav')):
@@ -29,25 +27,27 @@ def test_model():
                 file_path = os.path.join(person_path, vowel_file)
                 
                 try:
-                    test_original = extract_mfcc(file_path, use_filter=False)
-                    test_lowpass = extract_mfcc(file_path, use_filter=True, filter_type='low', cutoff=1000)
-                    test_highpass = extract_mfcc(file_path, use_filter=True, filter_type='high', cutoff=500)
-                    
-                    best_match = find_best_match(test_original, templates['original'])
-                    results['original'][person][vowel_label] = best_match
-                    
-                    best_match = find_best_match(test_lowpass, templates['lowpass'])
-                    results['lowpass'][person][vowel_label] = best_match
-                    
-                    best_match = find_best_match(test_highpass, templates['highpass'])
-                    results['highpass'][person][vowel_label] = best_match
+                    for key in templates.keys():
+                        n_mfcc = int(key.split('_')[2])
+                        filter_type = key.split('_')[-1]
+                        
+                        # Tentukan filter
+                        if filter_type == 'nofilter':
+                            test_mfcc = extract_mfcc(file_path, n_mfcc=n_mfcc)
+                        elif filter_type == 'low':
+                            test_mfcc = extract_mfcc(file_path, n_mfcc=n_mfcc, filter_type='low', cutoff=1000)
+                        elif filter_type == 'high':
+                            test_mfcc = extract_mfcc(file_path, n_mfcc=n_mfcc, filter_type='high', cutoff=500)
+                        
+                        # Cari template terbaik
+                        best_match = find_best_match(test_mfcc, templates[key])
+                        results[key][person][vowel_label] = best_match
                     
                     print(f"Processed {person}/{vowel_file}")
-                    
                 except Exception as e:
                     print(f"Error processing {person}/{vowel_file}: {str(e)}")
                     continue
-    
+
     return results
 
 def find_best_match(test_mfcc, templates):
@@ -65,7 +65,7 @@ def find_best_match(test_mfcc, templates):
 def calculate_accuracy(results):
     accuracies = {}
     
-    for filter_type, filter_results in results.items():
+    for key, filter_results in results.items():
         total = 0
         correct = 0
         
@@ -76,7 +76,7 @@ def calculate_accuracy(results):
                     correct += 1
         
         accuracy = (correct / total) * 100 if total > 0 else 0
-        accuracies[filter_type] = accuracy
+        accuracies[key] = accuracy
     
     return accuracies
 
@@ -89,16 +89,16 @@ if __name__ == "__main__":
         accuracies = calculate_accuracy(results)
         
         print("\nDetailed Results:")
-        for filter_type, filter_results in results.items():
-            print(f"\n{filter_type.upper()} FILTER RESULTS:")
+        for key, filter_results in results.items():
+            print(f"\n{key.upper()} RESULTS:")
             for person, person_results in filter_results.items():
                 print(f"\nPerson: {person}")
                 for vowel_label, predicted in person_results.items():
                     print(f"True: {vowel_label}, Predicted: {predicted[0]}")
         
         print("\nAccuracies:")
-        for filter_type, accuracy in accuracies.items():
-            print(f"{filter_type}: {accuracy:.2f}%")
+        for key, accuracy in accuracies.items():
+            print(f"{key}: {accuracy:.2f}%")
             
     except Exception as e:
         print(f"An error occurred: {str(e)}")
